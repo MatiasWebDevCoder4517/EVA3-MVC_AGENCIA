@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using EVA3_MVC_AGENCIA.Areas.Executives.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,5 +13,7 @@ namespace EVA3_MVC_AGENCIA.Data
             : base(options)
         {
         }
+
+        public DbSet<TExecutives> TExecutives { get; set; }
     }
 }
