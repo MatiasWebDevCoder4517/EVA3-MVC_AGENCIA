@@ -73,6 +73,9 @@ namespace EVA3_MVC_AGENCIA
                 endpoints.MapAreaControllerRoute("Executives", "Executives", "{controller=Executives}/{action=Executives}/{id?}");
 
                 endpoints.MapAreaControllerRoute("Principal", "Principal", "{controller=Principal}/{action=Principal}/{id?}");
+
+                endpoints.MapAreaControllerRoute("Clients", "Clients", "{controller=Clients}/{action=Clients}/{id?}");
+
                 endpoints.MapRazorPages();
             });
         }

@@ -32,6 +32,7 @@ input[type="file"] {
     position: absolute;
     z-index: -1;
 }
+
 .imageExecutive {
     max-width: 100%;
 }
@@ -44,15 +45,32 @@ input[type="file"] {
 .imageExecutiveDetails {
     max-width: 70%;
 }
+
+.imglogo {
+    max-width: 100%;
+}
+
+.navbar-brand {
+    max-width: 50%;
+}
+
+.border-bottom {
+    border-bottom: 3px solid #d6d5d5 !important;
     /* Sticky footer styles
 -------------------------------------------------- */
-    html {
+}
+
+html {
     font-size: 14px;
 }
 
 @media (min-width: 768px) {
     html {
         font-size: 16px;
+    }
+
+    .navbar-brand {
+        max-width: 15%;
     }
 }
 

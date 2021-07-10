@@ -11,6 +11,9 @@
             case "ExecutiveRegister":
                 document.getElementById('files').addEventListener('change', imageExecutive, false);
                 break;
+            case "ClientsRegister":
+                document.getElementById('files').addEventListener('change', imageClient, false);
+                break;
         }
     }
 }

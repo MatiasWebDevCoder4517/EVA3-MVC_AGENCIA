@@ -33,6 +33,13 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
                             <li class="nav-item  dropdown">
+                                <a class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Clients</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" asp-area="Clients" asp-controller="Clients" asp-action="Clients">Clients List</a>
+                                    <a class="dropdown-item" asp-route-id="0" asp-area="Clients" asp-page="/Account/Register">Add Client</a>
+                                </div>
+                            </li>
+                            <li class="nav-item  dropdown">
                                 <a class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Executives</a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" asp-area="Executives" asp-controller="Executives" asp-action="Executives">Executives List</a>
@@ -63,7 +70,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/Uploadpicture.js" asp-append-version="true"></script>
-    <script src="~/js/Executive.js" asp-append-version="true"></script>
+    <script src="~/js/Executives.js" asp-append-version="true"></script>
+    <script src="~/js/Clients.js" asp-append-version="true"></script>
     <script src="~/js/Principal.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

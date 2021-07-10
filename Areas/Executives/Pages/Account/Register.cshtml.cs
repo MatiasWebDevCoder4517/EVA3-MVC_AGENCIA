@@ -13,10 +13,11 @@ using EVA3_MVC_AGENCIA.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EVA3_MVC_AGENCIA.Areas.Executives.Pages.Account
 {
-    //[Authorize]
+    [Authorize]
     [Area("Executives")]
     public class RegisterModel : PageModel
     {
@@ -27,31 +28,61 @@ namespace EVA3_MVC_AGENCIA.Areas.Executives.Pages.Account
         private LExecutivesRoles _usersRole;
         private static InputModel _dataInput;
         private Uploadimage _uploadimage;
-        private static InputModelRegister _dataExecutives1, _dataExecutives2;
+        private static InputModelRegister _dataExecutive1, _dataExecutive2;
         private IWebHostEnvironment _environment;
-
-
         public RegisterModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            RoleManager<IdentityRole> roleManager, ApplicationDbContext context, IWebHostEnvironment environment)
+            RoleManager<IdentityRole> roleManager,
+            ApplicationDbContext context,
+            IWebHostEnvironment environment)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _environment = environment;
-            _uploadimage = new Uploadimage();
             _usersRole = new LExecutivesRoles();
+            _uploadimage = new Uploadimage();
         }
-
-        public void OnGet()
+        public void OnGet(int id)
         {
-            if (_dataInput != null)
+            _dataExecutive2 = null;
+            if (id.Equals(0))
             {
-                Input = _dataInput;
-                Input.rolesLista = _usersRole.getRoles(_roleManager);
-                Input.AvatarImage = null;
+                _dataExecutive2 = null;
+            }
+            if (_dataInput != null || _dataExecutive1 != null || _dataExecutive2 != null)
+            {
+                if (_dataInput != null)
+                {
+                    Input = _dataInput;
+                    Input.rolesLista = _usersRole.getRoles(_roleManager);
+                    Input.AvatarImage = null;
+                }
+                else
+                {
+                    if (_dataExecutive1 != null || _dataExecutive2 != null)
+                    {
+                        if (_dataExecutive2 != null)
+                            _dataExecutive1 = _dataExecutive2;
+                        Input = new InputModel
+                        {
+                            Id = _dataExecutive1.Id,
+                            Name = _dataExecutive1.Name,
+                            LastName = _dataExecutive1.LastName,
+                            NID = _dataExecutive1.NID,
+                            Email = _dataExecutive1.Email,
+                            Image = _dataExecutive1.Image,
+                            PhoneNumber = _dataExecutive1.IdentityUser.PhoneNumber,
+                            rolesLista = getRoles(_dataExecutive1.Role),
+                        };
+                        if (_dataInput != null)
+                        {
+                            Input.ErrorMessage = _dataInput.ErrorMessage;
+                        }
+                    }
+                }
             }
             else
             {
@@ -61,6 +92,8 @@ namespace EVA3_MVC_AGENCIA.Areas.Executives.Pages.Account
                 };
             }
 
+            _dataExecutive2 = _dataExecutive1;
+            _dataExecutive1 = null;
         }
         [BindProperty]
         public InputModel Input { get; set; }
@@ -75,35 +108,51 @@ namespace EVA3_MVC_AGENCIA.Areas.Executives.Pages.Account
         {
             if (dataExecutive == null)
             {
-                if (_dataExecutives2 == null)
+                if (_dataExecutive2 == null)
                 {
-                    if (await SaveAsync())
+                    if (User.IsInRole("Admin"))
+                    {
+                        if (await SaveAsync())
+                        {
+                            return Redirect("/Executives/Executives?area=Executives");
+                        }
+                        else
+                        {
+                            return Redirect("/Executives/Register");
+                        }
+                    }
+                    else
                     {
                         return Redirect("/Executives/Executives?area=Executives");
                     }
-                    else
-                    {
-                        return Redirect("/Executives/Register");
-                    }
+
                 }
                 else
                 {
-                    if (await UpdateAsync())
+                    if (User.IsInRole("Admin"))
                     {
-                        var url = $"/Executives/Account/Details?id={_dataExecutives2.Id}";
-                        _dataExecutives2 = null;
-                        return Redirect(url);
+                        if (await UpdateAsync())
+                        {
+                            var url = $"/Users/Account/Details?id={_dataExecutive2.Id}";
+                            _dataExecutive2 = null;
+                            return Redirect(url);
+                        }
+                        else
+                        {
+                            return Redirect("/Executives/Register");
+                        }
                     }
                     else
                     {
-                        return Redirect("/Executives/Register");
+                        return Redirect("/Executives/Executives?area=Executives");
                     }
+
                 }
 
             }
             else
             {
-                _dataExecutives1 = JsonConvert.DeserializeObject<InputModelRegister>(dataExecutive);
+                _dataExecutive1 = JsonConvert.DeserializeObject<InputModelRegister>(dataExecutive);
                 return Redirect("/Executives/Register?id=1");
             }
 
@@ -115,40 +164,40 @@ namespace EVA3_MVC_AGENCIA.Areas.Executives.Pages.Account
             var valor = false;
             if (ModelState.IsValid)
             {
-                var userList = _userManager.Users.Where(u => u.Email.Equals(Input.Email)).ToList();
-                if (userList.Count.Equals(0))
+                var executiveList = _userManager.Users.Where(u => u.Email.Equals(Input.Email)).ToList();
+                if (executiveList.Count.Equals(0))
                 {
                     var strategy = _context.Database.CreateExecutionStrategy();
-                    await strategy.ExecuteAsync(async () =>
-                    {
+                    await strategy.ExecuteAsync(async () => {
                         using (var transaction = _context.Database.BeginTransaction())
                         {
                             try
                             {
-                                var user = new IdentityUser
+                                var executive = new IdentityUser
                                 {
                                     UserName = Input.Email,
                                     Email = Input.Email,
                                     PhoneNumber = Input.PhoneNumber
                                 };
-                                var result = await _userManager.CreateAsync(user, Input.Password);
+                                var result = await _userManager.CreateAsync(executive, Input.Password);
                                 if (result.Succeeded)
                                 {
-                                    await _userManager.AddToRoleAsync(user, Input.Role);
-                                    var dataUser = _userManager.Users.Where(u => u.Email.Equals(Input.Email)).ToList().Last();
+                                    await _userManager.AddToRoleAsync(executive, Input.Role);
+                                    var dataExecutive = _userManager.Users.Where(u => u.Email.Equals(Input.Email)).ToList().Last();
                                     var imageByte = await _uploadimage.ByteAvatarImageAsync(
                                         Input.AvatarImage, _environment, "images/images/mrRobot_avatar.png");
                                     var t_executive = new TExecutives
                                     {
                                         Name = Input.Name,
                                         LastName = Input.LastName,
-                                        NID = Input.ID,
+                                        NID = Input.NID,
                                         Email = Input.Email,
-                                        IdUser = dataUser.Id,
+                                        IdUser = dataExecutive.Id,
                                         Image = imageByte,
                                     };
                                     await _context.AddAsync(t_executive);
                                     _context.SaveChanges();
+
                                     transaction.Commit();
                                     _dataInput = null;
                                     valor = true;
@@ -221,7 +270,7 @@ namespace EVA3_MVC_AGENCIA.Areas.Executives.Pages.Account
                 {
                     try
                     {
-                        var identityUser = _userManager.Users.Where(u => u.Id.Equals(_dataExecutives2.ID)).ToList().Last();
+                        var identityUser = _userManager.Users.Where(u => u.Id.Equals(_dataExecutive2.ID)).ToList().Last();
                         identityUser.UserName = Input.Email;
                         identityUser.Email = Input.Email;
                         identityUser.PhoneNumber = Input.PhoneNumber;
@@ -230,7 +279,7 @@ namespace EVA3_MVC_AGENCIA.Areas.Executives.Pages.Account
 
                         if (Input.AvatarImage == null)
                         {
-                            imageByte = _dataExecutives2.Image;
+                            imageByte = _dataExecutive2.Image;
                         }
                         else
                         {
@@ -238,19 +287,19 @@ namespace EVA3_MVC_AGENCIA.Areas.Executives.Pages.Account
                         }
                         var t_executive = new TExecutives
                         {
-                            ID = _dataExecutives2.Id,
+                            ID = _dataExecutive2.Id,
                             Name = Input.Name,
                             LastName = Input.LastName,
                             NID = Input.NID,
                             Email = Input.Email,
-                            IdUser = _dataExecutives2.ID,
+                            IdUser = _dataExecutive2.ID,
                             Image = imageByte,
                         };
                         _context.Update(t_executive);
                         _context.SaveChanges();
-                        if (_dataExecutives2.Role != Input.Role)
+                        if (_dataExecutive2.Role != Input.Role)
                         {
-                            await _userManager.RemoveFromRoleAsync(identityUser, _dataExecutives2.Role);
+                            await _userManager.RemoveFromRoleAsync(identityUser, _dataExecutive2.Role);
                             await _userManager.AddToRoleAsync(identityUser, Input.Role);
                         }
                         transaction.Commit();

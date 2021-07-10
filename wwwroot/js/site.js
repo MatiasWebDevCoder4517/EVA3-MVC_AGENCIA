@@ -10,9 +10,15 @@ var principal = new Principal();
 
 
 /*CODIGO DE Ejecutivos*/
-var executive = new Executive();
+var executives = new Executives();
 var imageExecutive = (evt) => {
     executive.archivo(evt, "imageExecutive");
+}
+
+/*CODIGO DE CLIENTES*/
+var clients = new Clients();
+var imageClients = (evt) => {
+    clients.archivo(evt, "imageClients");
 }
 
 $().ready(() => {
