@@ -14,11 +14,11 @@ namespace EVA3_MVC_AGENCIA.Areas.Clients.Models
         public Decimal Monthly { set; get; }
         public Decimal Change { set; get; }
         public Decimal LastPayment { set; get; }
-        //public DateTime DatePayment { set; get; }
+        public DateTime DatePayment { set; get; }
         public Decimal CurrentDebt { set; get; }
-        //public DateTime DateDebt { set; get; }
+        public DateTime DateDebt { set; get; }
         public string Ticket { set; get; }
-        //public DateTime Deadline { set; get; }
+        public DateTime Deadline { set; get; }
         public int IdClient { get; set; }
         public TClients TClients { get; set; }
 

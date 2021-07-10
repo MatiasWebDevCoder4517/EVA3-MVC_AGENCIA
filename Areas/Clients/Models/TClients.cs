@@ -16,8 +16,8 @@ namespace EVA3_MVC_AGENCIA.Areas.Clients.Models
         public string Email { set; get; }
         public string Direction { set; get; }
         public string Phone { set; get; }
-        //public DateTime Date { set; get; }
-        //public bool Credit { set; get; }
+        public DateTime Date { set; get; }
+        public bool Credit { set; get; }
         public byte[] Image { get; set; }
         public List<TReports_clients> TReports_clients { get; set; }
 

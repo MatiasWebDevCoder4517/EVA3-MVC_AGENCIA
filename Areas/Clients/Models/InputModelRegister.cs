@@ -24,10 +24,10 @@ namespace EVA3_MVC_AGENCIA.Areas.Clients.Models
         [DataType(DataType.PhoneNumber)]
         [RegularExpression(@"^\(?([0-9]{2})\)?[-. ]?([0-9]{2})[-. ]?([0-9]{5})$", ErrorMessage = "El formato telefono ingresado no es válido.")]
         public string Phone { set; get; }
-        //[Required(ErrorMessage = "El campo fecha es obligatorio.")]
-        //[DataType(DataType.Date)]
-        //public DateTime Date { set; get; }
-        //public bool Credit { set; get; }
+        [Required(ErrorMessage = "El campo fecha es obligatorio.")]
+        [DataType(DataType.Date)]
+        public DateTime Date { set; get; }
+        public bool Credit { set; get; }
         public byte[] Image { get; set; }
         public int IdClient { set; get; }
         [TempData]
