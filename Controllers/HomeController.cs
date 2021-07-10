@@ -12,6 +12,8 @@ using EVA3_MVC_AGENCIA.Areas.Executives.Models;
 using EVA3_MVC_AGENCIA.Library;
 using EVA3_MVC_AGENCIA.Data;
 using EVA3_MVC_AGENCIA.Areas.Principal.Controllers;
+using System.Net.Mail;
+using System.Net;
 
 namespace EVA3_MVC_AGENCIA.Controllers
 {
@@ -87,6 +89,50 @@ namespace EVA3_MVC_AGENCIA.Controllers
             return View();
         }
 
+        public ActionResult SendEmail()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult SendEmail(string receiver, string subject, string message)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var senderEmail = new MailAddress("jamilmoughal786@gmail.com", "Jamil");
+                    var receiverEmail = new MailAddress(receiver, "Receiver");
+                    var password = "Your Email Password here";
+                    var sub = subject;
+                    var body = message;
+                    var smtp = new SmtpClient
+                    {
+                        Host = "smtp.gmail.com",
+                        Port = 587,
+                        EnableSsl = true,
+                        DeliveryMethod = SmtpDeliveryMethod.Network,
+                        UseDefaultCredentials = false,
+                        Credentials = new NetworkCredential(senderEmail.Address, password)
+                    };
+                    using (var mess = new MailMessage(senderEmail, receiverEmail)
+                    {
+                        Subject = subject,
+                        Body = body
+                    })
+                    {
+                        smtp.Send(mess);
+                    }
+                    return View();
+                }
+            }
+            catch (Exception)
+            {
+                ViewBag.Error = "Some Error";
+            }
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
@@ -95,7 +141,7 @@ namespace EVA3_MVC_AGENCIA.Controllers
         private async Task CreateRolesAsync(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            String[] rolesName = { "Admin", "Senior", "Junior", "Jefe"};
+            String[] rolesName = { "Admin", "Senior", "Junior", "Jefe" };
             foreach (var item in rolesName)
             {
                 var roleExist = await roleManager.RoleExistsAsync(item);
@@ -105,5 +151,8 @@ namespace EVA3_MVC_AGENCIA.Controllers
                 }
             }
         }
+
+
+
     }
 }

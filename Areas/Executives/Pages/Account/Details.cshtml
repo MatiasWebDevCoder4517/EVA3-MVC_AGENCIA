@@ -1,12 +1,10 @@
 ﻿@page
-@model EVA3_MVC_AGENCIA.Areas.Executives.Pages.Account.DetailsModel
+@model DetailsModel
 @{
     var image = "data:image/jpg;base64," + Convert.ToBase64String(Model.Input.DataExecutive.Image,
         0, Model.Input.DataExecutive.Image.Length);
     var name = Model.Input.DataExecutive.Name + " " + Model.Input.DataExecutive.LastName;
 }
-
-
 <div class="container">
     <h1>@name</h1>
     <div class="row">
@@ -100,10 +98,10 @@
                                 <td>
                                     <form asp-area="Executives" asp-page="Register" method="post">
                                         @{
-                                            var dataExecutive = JsonConvert.SerializeObject(Model.Input.DataExecutive);
+                                            var dataUser = JsonConvert.SerializeObject(Model.Input.DataExecutive);
                                         }
 
-                                        <input type="hidden" name="DataExecutive" value="@dataExecutive" />
+                                        <input type="hidden" name="DataExecutive" value="@dataUser" />
                                         <input type="submit" value="Editar" class="btn btn-success ">
                                         <input type="submit" value="Eliminar" class="btn btn-danger ">
                                     </form>
@@ -116,4 +114,5 @@
         </div>
     </div>
 </div>
+
 
